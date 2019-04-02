@@ -69,8 +69,8 @@ Module.register('MMM-NowPlayingOnSpotify', {
     this.sendSocketNotification('CONNECT_TO_SPOTIFY', credentials);
 
     // ... and then repeat in the given interval
-    setInterval(() => {
-      this.sendSocketNotification('UPDATE_CURRENT_SONG');
-    }, this.config.updatesEvery * 1000);
+    //setInterval(() => {
+    //  this.sendSocketNotification('UPDATE_CURRENT_SONG');
+    //}, this.config.updatesEvery * 1000);
   }
 });

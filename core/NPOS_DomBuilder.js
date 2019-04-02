@@ -71,10 +71,6 @@ class NPOS_DomBuilder {
    *   songTitle: *string*,
    *   artist: *string*,
    *   album: *string*,
-   *   titleLength: *num*,
-   *   progress: *num*,
-   *   isPlaying: *boolean*,
-   *   deviceName: *string*
    * }
    *
    * @param context
@@ -92,27 +88,9 @@ class NPOS_DomBuilder {
     content.appendChild(this.getInfoDiv('fa fa-music', context.songTitle));
     content.appendChild(this.getInfoDiv('fa fa-user', context.artist));
     content.appendChild(this.getInfoDiv('fa fa-folder', context.album));
-    content.appendChild(this.getInfoDiv(this.getPlayStatusIcon(context.isPlaying), this.getTimeInfo(context)));
-    content.appendChild(this.getProgressBar(context));
     content.appendChild(this.getInfoDiv('', context.deviceName));
 
     return content;
-  }
-
-  getProgressBar(context) {
-    let progressBar = document.createElement('progress');
-    progressBar.className = 'NPOS_progress';
-    progressBar.value = context.progress;
-    progressBar.max = context.titleLength;
-
-    return progressBar;
-  }
-
-  getTimeInfo(context) {
-    let currentPos = moment.duration(context.progress);
-    let length = moment.duration(context.titleLength);
-
-    return currentPos.format() + ' / ' + length.format();
   }
 
   getInfoDiv(symbol, text) {
@@ -143,7 +121,4 @@ class NPOS_DomBuilder {
     return coverArea;
   }
 
-  getPlayStatusIcon(isPlaying) {
-    return isPlaying ? 'fa fa-play' : 'fa fa-pause';
-  }
 }

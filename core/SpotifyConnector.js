@@ -4,7 +4,7 @@ const request = require('request-promise-native');
 const moment = require('moment');
 
 const tokenRefreshEndpoint = 'https://accounts.spotify.com/api/token';
-const apiEndpoint = 'https://api.spotify.com/v1/me/player';
+const apiEndpoint = 'https://api.spotify.com/v1/tracks/';
 
 
 module.exports = class SpotifyConnector {
@@ -14,9 +14,9 @@ module.exports = class SpotifyConnector {
     this.tokenExpiresAt = moment();
   }
 
-  retrieveCurrentlyPlaying() {
+  retrieveCurrentlyPlaying(track_id) {
     if (moment().isBefore(this.tokenExpiresAt)) {
-      return this.getSpotifyData();
+      return this.getSpotifyData(track_id);
 
     } else {
       return this.refreshAccessToken()
@@ -27,7 +27,7 @@ module.exports = class SpotifyConnector {
           this.credentials.accessToken = response.access_token;
           this.tokenExpiresAt = moment().add(response.expires_in, 'seconds');
 
-          return this.getSpotifyData();
+          return this.getSpotifyData(track_id);
         })
         .catch((err) => {
           console.error('Error while refreshing:');
@@ -36,9 +36,9 @@ module.exports = class SpotifyConnector {
     }
   }
 
-  getSpotifyData() {
+  getSpotifyData(track_id) {
     let options = {
-      url: apiEndpoint,
+      url: apiEndpoint + track_id,
       headers: {'Authorization': 'Bearer ' + this.credentials.accessToken},
       json: true
     };
