@@ -88,7 +88,6 @@ class NPOS_DomBuilder {
     content.appendChild(this.getInfoDiv('fa fa-music', context.songTitle));
     content.appendChild(this.getInfoDiv('fa fa-user', context.artist));
     content.appendChild(this.getInfoDiv('fa fa-folder', context.album));
-    content.appendChild(this.getInfoDiv('', context.deviceName));
 
     return content;
   }

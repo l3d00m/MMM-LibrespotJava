@@ -17,9 +17,9 @@ client.connect("192.168.0.40",
 
 
 if os.environ['PLAYER_EVENT'] == "start":
-    client.publish(mqtt_topic, os.environ['TRACK_ID'])
+    client.publish(mqtt_topic, os.environ['TRACK_ID'], retain=True)
 elif os.environ['PLAYER_EVENT'] == "change":
-    client.publish(mqtt_topic, os.environ['TRACK_ID'])
+    client.publish(mqtt_topic, os.environ['TRACK_ID'], retain=True)
 elif os.environ['PLAYER_EVENT'] == "stop":
-    client.publish(mqtt_topic, "STOP")
+    client.publish(mqtt_topic, "STOP", retain=True)
 
