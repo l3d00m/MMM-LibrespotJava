@@ -1,13 +1,11 @@
 # MMM-NowPlayingOnSpotify
 A module for the [MagicMirror](https://github.com/MichMich/MagicMirror) project by [Michael Teeuw](https://github.com/MichMich) displaying the song currently playing on Spotify.
 
+## This fork
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/2742abc792b88536f6e2/maintainability)](https://codeclimate.com/github/raywo/MMM-NowPlayingOnSpotify/maintainability) 
-[![Test Coverage](https://api.codeclimate.com/v1/badges/2742abc792b88536f6e2/test_coverage)](https://codeclimate.com/github/raywo/MMM-NowPlayingOnSpotify/test_coverage)
-[![Known Vulnerabilities](https://snyk.io/test/github/raywo/mmm-NowPlayingOnSpotify/badge.svg?targetFile=package.json)](https://snyk.io/test/github/raywo/mmm-NowPlayingOnSpotify?targetFile=package.json)
-[![Greenkeeper badge](https://badges.greenkeeper.io/raywo/MMM-NowPlayingOnSpotify.svg)](https://greenkeeper.io/)
-[![dependency status](https://david-dm.org/raywo/MMM-NowPlayingOnSpotify.svg)](https://david-dm.org/raywo/MMM-NowPlayingOnSpotify)
-[![chat on gitter](https://badges.gitter.im/raywo.svg)](https://gitter.im/raywo)
+I've modified MMM-NowPlayingOnSpotify so I could integrate it with librespot. As multiple devices are streaming on the librespot client, I've searched for a way to display the currently playing song on the mirror, no matter which account it is. 
+
+Librespot has an `--onevent` option, which I use to start the [raspotify_status.py](raspotify_status.py) script. It shares the current track ID / state over MQTT. This modified mirror module listens to it and, while reusing most of the original code, displays it on the mirror.
 
 
 ## How it works
