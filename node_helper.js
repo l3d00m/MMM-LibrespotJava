@@ -1,89 +1,98 @@
-'use strict';
-
+"use strict";
 const NodeHelper = require('node_helper');
-const SpotifyConnector = require('./core/SpotifyConnector');
-const mqtt = require('mqtt');
-var client = mqtt.connect('mqtt://192.168.0.40');
+const WebSocket = require('ws');
+const request = require("request");
 
 
 module.exports = NodeHelper.create({
-
     start: function () {
-        var that = this; // ugly
         this.connector = undefined;
-        client.on('connect', function () {
-            client.subscribe('music/state', function (err) {
-                if (!err) {
-                    //Log.info('Subscribed to MQTT topic');
-                }
-            })
-        });
-        client.on('message', function (topic, message) {
-            // message is Buffer
-            that.retrieveCurrentSong(message.toString());
-        });
     },
-
 
     socketNotificationReceived: function (notification, payload) {
         switch (notification) {
-            case 'CONNECT_TO_SPOTIFY':
-                this.connector = new SpotifyConnector(payload);
-                //this.retrieveCurrentSong();
+            case 'CONNECT_TO_WEBSOCKET':
+                this.connectWs(payload)
+                break;
+            case 'FETCH_SONG':
+                this.fetchSong(payload)
                 break;
         }
     },
 
+    connectWs: function (websocketUrl) {
+        console.log("Connecting to websocket: " + websocketUrl)
+        var that = this;
+        const ws = new WebSocket(websocketUrl);
+        ws.onopen = function () {
+            console.log("connected to librespot api WS")
+            setInterval(() => ws.send(JSON.stringify({ event: "ping" })), 10000);
+        };
 
-    retrieveCurrentSong: function (track_id) {
-        if (track_id.toLowerCase() === "stop") {
-            this.sendRetrievedNotification({noSong: true});
-        } else {
-            this.connector.retrieveCurrentlyPlaying(track_id)
-                .then((response) => {
-                    if (response) {
-                        this.sendRetrievedNotification(response);
-                    } else {
-                        this.sendRetrievedNotification({noSong: true});
-                    }
-                })
-                .catch((error) => {
-                    console.error('Can’t retrieve current song. Reason: ');
-                    console.error(error);
-                });
-        }
+        ws.onmessage = function (msg) {
+            const wsEvent = JSON.parse(msg.data);
+            const eventName = wsEvent["event"];
+            //console.log(eventName);
+            switch (eventName) {
+                case "playbackPaused":
+                    that.sendSocketNotification("UPDATE_STATE", "paused");
+                    break;
+                case "trackChanged":
+                case "playbackResumed":
+                    that.sendSocketNotification("UPDATE_STATE", "playing");
+                    break;
+                case "playbackStopped":
+                case "panic":
+                case "sessionCleared":
+                case "inactiveSession":
+                case "connectionDropped":
+                    that.sendSocketNotification("UPDATE_STATE", "stopped");
+                    break;
+                case "trackSeeked":
+                case "metadataAvailable":
+                case "sessionChanged":
+                    that.sendSocketNotification("FETCH_NEW_SONG_DATA");
+                    break;
+                case "contextChanged":
+                default:
+                    return;
+            }
 
+        };
+
+        ws.onclose = function (e) {
+            console.error("Socket is closed. Reconnect will be attempted.", e.reason);
+            setTimeout(function () {
+                that.connectWs(websocketUrl);
+            }, 100);
+        };
+
+        ws.onerror = function (err) {
+            console.error(
+                "Socket encountered error: ",
+                err.message,
+                "Closing socket and reopening shortly"
+            );
+            ws.close();
+            setTimeout(function () {
+                that.connectWs(websocketUrl);
+            }, 100);
+        };
     },
+    fetchSong: function (apiUrl) {
+        var that = this; // ugly
+        request.post(
+            apiUrl,
+            function (error, _response, body) {
+                if (error) return console.error("error with librespot java api");
+                let data = JSON.parse(body)
+                if (data["msg"] != null) {
+                    console.info(data["msg"])
+                } else {
+                    that.sendSocketNotification("RETRIEVED_SONG_DATA", data);
+                }
 
-
-    sendRetrievedNotification: function (songInfo) {
-        let payload = songInfo;
-
-        if (!songInfo.noSong) {
-            payload = {
-                imgURL: this.getImgURL(songInfo.album.images),
-                songTitle: songInfo.name,
-                artist: this.getArtistName(songInfo.artists),
-                album: songInfo.album.name
-            };
-        }
-
-        this.sendSocketNotification('RETRIEVED_SONG_DATA', payload);
+            }
+        );
     },
-
-
-    getArtistName: function (artists) {
-        return artists.map((artist) => {
-            return artist.name;
-        }).join(', ');
-    },
-
-
-    getImgURL(images) {
-        let filtered = images.filter((image) => {
-            return image.width >= 240 && image.width <= 350;
-        });
-
-        return filtered[0].url;
-    }
 });

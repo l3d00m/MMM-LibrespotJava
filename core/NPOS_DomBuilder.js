@@ -28,21 +28,21 @@ class NPOS_DomBuilder {
 
   getInitializingContent(loadingText) {
     let content = document.createElement('div');
-    content.className = 'NPOS_initContent';
+    //content.className = 'NPOS_initContent';
 
-    let loadingDiv = document.createElement('div');
-    loadingDiv.className = 'NPOS_loading medium';
-    loadingDiv.innerHTML = loadingText;
+    //let loadingDiv = document.createElement('div');
+    //loadingDiv.className = 'NPOS_loading medium';
+    //loadingDiv.innerHTML = loadingText;
 
-    content.appendChild(loadingDiv);
+    //content.appendChild(loadingDiv);
 
     return content;
   }
 
   getNothingIsPlayingContent() {
     let content = document.createElement('div');
-    content.className = 'NPOS_nothingIsPlayingContent';
-    content.appendChild(this.getLogoImage());
+    //content.className = 'NPOS_nothingIsPlayingContent';
+    //content.appendChild(this.getLogoImage());
 
     return content;
   }
@@ -87,9 +87,31 @@ class NPOS_DomBuilder {
 
     content.appendChild(this.getInfoDiv('fa fa-music', context.songTitle));
     content.appendChild(this.getInfoDiv('fa fa-user', context.artist));
-    content.appendChild(this.getInfoDiv('fa fa-folder', context.album));
+    //content.appendChild(this.getInfoDiv('fa fa-folder', context.album));
+    content.appendChild(this.getInfoDiv(this.getPlayStatusIcon(context.isPlaying), this.getTimeInfo(context)));
+    content.appendChild(this.getProgressBar(context));
 
     return content;
+  }
+
+  getProgressBar(context) {
+    let progressBar = document.createElement('progress');
+    progressBar.className = 'NPOS_progress';
+    progressBar.value = context.progress;
+    progressBar.max = context.titleLength;
+
+    return progressBar;
+  }
+
+  getPlayStatusIcon(isPlaying) {
+    return isPlaying ? 'fa fa-play' : 'fa fa-pause';
+  }
+
+  getTimeInfo(context) {
+    let currentPos = moment.duration(context.progress);
+    let length = moment.duration(context.titleLength);
+
+    return `${currentPos.format("m:ss", { trim: false })} / ${length.format("m:ss", { trim: false })}`;
   }
 
   getInfoDiv(symbol, text) {

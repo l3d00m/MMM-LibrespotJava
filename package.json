@@ -1,10 +1,10 @@
 {
-  "name": "MMM-NowPlayingOnSpotify",
+  "name": "MMM-NowPlayingOnLibrespot",
   "version": "1.0.0",
   "description": "A module for MagicMirror 2 displaying the currently playing song on Spotify.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/raywo/MMM-NowPlayingOnSpotify"
+    "url": "https://github.com/l3d00m/MMM-NowPlayingOnLibrespot"
   },
   "keywords": [
     "magic mirror",
@@ -30,14 +30,13 @@
     "node": ">=7"
   },
   "dependencies": {
-    "cookie-parser": "1.4.3",
-    "express": "~4.16.0",
-    "moment-duration-format": "^2.2.2",
-    "npm": "^5.7.1",
+    "@types/request": "^2.48.7",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "1.4.5",
+    "express": "~4.17.1",
+    "moment-duration-format": "^2.3.2",
     "querystring": "~0.2.0",
-    "request": "^2.83.0",
-    "request-promise-native": "^1.0.5",
-    "body-parser": "^1.18.2",
-    "mqtt": "^2.18.8"
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.5"
   }
 }
