@@ -1,10 +1,10 @@
 {
-  "name": "MMM-NowPlayingOnLibrespot",
+  "name": "MMM-LibrespotJava",
   "version": "1.0.0",
-  "description": "A module for MagicMirror 2 displaying the currently playing song on Spotify.",
+  "description": "A module for MagicMirror 2 displaying the currently playing song on Librespot Java.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/l3d00m/MMM-NowPlayingOnLibrespot"
+    "url": "https://github.com/l3d00m/MMM-LibrespotJava"
   },
   "keywords": [
     "magic mirror",
@@ -19,13 +19,13 @@
     "url": "https://github.com/raywo"
   },
   "contributors": [
-    "https://github.com/raywo/MMM-NowPlayingOnSpotify/graphs/contributors"
+    "https://github.com/l3d00m/MMM-LibrespotJava/graphs/contributors"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/raywo/MMM-NowPlayingOnSpotify/issues"
+    "url": "https://github.com/l3d00m/MMM-LibrespotJava/issues"
   },
-  "homepage": "https://github.com/raywo/MMM-NowPlayingOnSpotify",
+  "homepage": "https://github.com/l3d00m/MMM-LibrespotJava",
   "engines": {
     "node": ">=7"
   },

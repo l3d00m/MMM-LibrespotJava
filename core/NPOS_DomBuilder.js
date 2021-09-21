@@ -7,15 +7,13 @@ class NPOS_DomBuilder {
   }
 
   getDom(context) {
-    if (context.noSong) {
-      return this.getWrapper(this.getNothingIsPlayingContent());
+    console.log(context)
+    if (!context || context.noSong) {
+      // don't show anything
+      return document.createElement('div');
     } else {
       return this.getWrapper(this.getPlayingContent(context));
     }
-  }
-
-  getInitDom(loadingText) {
-    return this.getWrapper(this.getInitializingContent(loadingText));
   }
 
   getWrapper(content) {
@@ -26,43 +24,6 @@ class NPOS_DomBuilder {
     return wrapper;
   }
 
-  getInitializingContent(loadingText) {
-    let content = document.createElement('div');
-    //content.className = 'NPOS_initContent';
-
-    //let loadingDiv = document.createElement('div');
-    //loadingDiv.className = 'NPOS_loading medium';
-    //loadingDiv.innerHTML = loadingText;
-
-    //content.appendChild(loadingDiv);
-
-    return content;
-  }
-
-  getNothingIsPlayingContent() {
-    let content = document.createElement('div');
-    //content.className = 'NPOS_nothingIsPlayingContent';
-    //content.appendChild(this.getLogoImage());
-
-    return content;
-  }
-
-  getLogoImage() {
-    return this.getImage('img/Spotify_Logo_RGB_White.png', 'NPOS_nothingIsPlayingImage');
-  }
-
-  getIconImage(className) {
-    return this.getImage('img/Spotify_Icon_RGB_White.png', className);
-  }
-
-  getImage(imageName, className) {
-    let image = document.createElement('img');
-    image.src = this.pathPrefix + imageName;
-    image.className = className;
-
-    return image;
-  }
-
   /**
    * Returns a div configured for the given context.
    *
@@ -71,6 +32,9 @@ class NPOS_DomBuilder {
    *   songTitle: *string*,
    *   artist: *string*,
    *   album: *string*,
+   *   isPlaying,
+   *   progress,
+   *   titleLength
    * }
    *
    * @param context
@@ -79,16 +43,12 @@ class NPOS_DomBuilder {
   getPlayingContent(context) {
     let content = document.createElement('div');
 
-    if (this.config.showCoverArt) {
-      content.appendChild(this.getCoverArtDiv(context.imgURL));
-    } else {
-      content.appendChild(this.getIconImage('NPOS_logoImage'));
-    }
+    content.appendChild(this.getCoverArtDiv(context.imgURL));
 
     content.appendChild(this.getInfoDiv('fa fa-music', context.songTitle));
     content.appendChild(this.getInfoDiv('fa fa-user', context.artist));
-    //content.appendChild(this.getInfoDiv('fa fa-folder', context.album));
-    content.appendChild(this.getInfoDiv(this.getPlayStatusIcon(context.isPlaying), this.getTimeInfo(context)));
+    content.appendChild(this.getInfoDiv('fa fa-record-vinyl', context.album));
+    content.appendChild(this.getInfoDiv(context.isPlaying ? 'fa fa-play' : 'fa fa-pause', this.getTimeInfo(context)));
     content.appendChild(this.getProgressBar(context));
 
     return content;
@@ -101,10 +61,6 @@ class NPOS_DomBuilder {
     progressBar.max = context.titleLength;
 
     return progressBar;
-  }
-
-  getPlayStatusIcon(isPlaying) {
-    return isPlaying ? 'fa fa-play' : 'fa fa-pause';
   }
 
   getTimeInfo(context) {
@@ -130,16 +86,10 @@ class NPOS_DomBuilder {
   }
 
   getCoverArtDiv(coverURL) {
-    let coverArea = document.createElement('div');
-    coverArea.className = 'NPOS_coverArtArea';
-
     let cover = document.createElement('img');
     cover.src = coverURL;
     cover.className = 'NPOS_albumCover';
-
-    coverArea.appendChild(cover);
-
-    return coverArea;
+    return cover;
   }
 
 }

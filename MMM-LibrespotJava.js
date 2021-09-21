@@ -2,39 +2,32 @@
 
 let state = "stopped";
 
-Module.register('MMM-NowPlayingOnLibrespot', {
+Module.register('MMM-LibrespotJava', {
 
   // default values
   defaults: {
     // Module misc
-    name: 'MMM-NowPlayingOnLibrespot',
+    name: 'MMM-LibrespotJava',
     hidden: false,
 
     // user definable
     librespotApiHost: "localhost", // librespot java API host address (ip)
     librespotApiPort: "24789", // librespot java API port, default is 24789
     updatesEvery: 1,          // How often should the table be updated in s?
-    showCoverArt: true,       // Do you want the cover art to be displayed?
   },
 
 
   start: function () {
     Log.info('Starting module: ' + this.name);
 
-    this.initialized = false;
-    this.context = {};
+    this.context = null;
     this.sendSocketNotification('CONNECT_TO_WEBSOCKET', `ws://${this.config.librespotApiHost}:${this.config.librespotApiPort}/events`);
     this.startFetchingLoop();
   },
 
   getDom: function () {
     let domBuilder = new NPOS_DomBuilder(this.config, this.file(''));
-
-    if (this.initialized) {
-      return domBuilder.getDom(this.context);
-    } else {
-      return domBuilder.getInitDom(this.translate('LOADING'));
-    }
+    return domBuilder.getDom(this.context);
   },
 
   getStyles: function () {
@@ -59,7 +52,7 @@ Module.register('MMM-NowPlayingOnLibrespot', {
         break;
       case 'UPDATE_STATE':
         state = payload;
-        if (state != "stopped" ) break;
+        if (state != "stopped") break;
       case "FETCH_NEW_SONG_DATA":
         if (state == "stopped") return this.updateSongDom(null);
         this.sendSocketNotification("FETCH_SONG", `http://${this.config.librespotApiHost}:${this.config.librespotApiPort}/player/current`);
@@ -70,13 +63,12 @@ Module.register('MMM-NowPlayingOnLibrespot', {
   startFetchingLoop() {
     // ... and then repeat in the given interval
     setInterval(() => {
-      if (state != "stopped" ) this.sendSocketNotification("FETCH_SONG", `http://${this.config.librespotApiHost}:${this.config.librespotApiPort}/player/current`);
+      if (state != "stopped") this.sendSocketNotification("FETCH_SONG", `http://${this.config.librespotApiHost}:${this.config.librespotApiPort}/player/current`);
     }, this.config.updatesEvery * 1000);
   },
-  
+
 
   updateSongDom: function (songInfo) {
-    this.initialized = true;
     if (state == "stopped") {
       this.context = { noSong: true };
     } else {
@@ -99,7 +91,7 @@ Module.register('MMM-NowPlayingOnLibrespot', {
     let filtered = images.filter((image) => {
       return image.width >= 240 && image.width <= 350;
     });
-    console.log(filtered[0].fileId)
+
     return `https://i.scdn.co/image/${filtered[0].fileId.toLowerCase()}` //todo
   },
 });
