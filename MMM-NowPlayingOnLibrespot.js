@@ -11,10 +11,10 @@ Module.register('MMM-NowPlayingOnLibrespot', {
     hidden: false,
 
     // user definable
-    librespotApiHost: "192.168.0.150", // librespot java API host address (ip)
+    librespotApiHost: "localhost", // librespot java API host address (ip)
     librespotApiPort: "24789", // librespot java API port, default is 24789
     updatesEvery: 1,          // How often should the table be updated in s?
-    showCoverArt: false       // Do you want the cover art to be displayed?
+    showCoverArt: true,       // Do you want the cover art to be displayed?
   },
 
 
@@ -99,7 +99,7 @@ Module.register('MMM-NowPlayingOnLibrespot', {
     let filtered = images.filter((image) => {
       return image.width >= 240 && image.width <= 350;
     });
-
-    return filtered[0].fileId; //todo
+    console.log(filtered[0].fileId)
+    return `https://i.scdn.co/image/${filtered[0].fileId.toLowerCase()}` //todo
   },
 });

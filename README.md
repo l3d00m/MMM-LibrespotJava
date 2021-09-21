@@ -1,10 +1,10 @@
 # MMM-NowPlayingOnLibrespot
 
-A module for the [MagicMirror](https://github.com/MichMich/MagicMirror) project by [Michael Teeuw](https://github.com/MichMich) displaying the song currently playing on Spotify.
+A module for the [MagicMirror](https://github.com/MichMich/MagicMirror) project displaying the song currently playing on Spotify.
 
 ## This fork
 
-I've modified the original MMM-NowPlayingOnSpotify so I could integrate it with Librespot Java API. It now has two extra options `librespotApiHost` and `librespotApiHost`. It will fetch all metadata from that librespot Java instance.
+I've modified the original MMM-NowPlayingOnSpotify so I could integrate it with Librespot Java API. It now has two extra options `librespotApiHost` and `librespotApiPort`. It will fetch all metadata from that librespot Java instance.
 
 I've also modified a few minor things to my liking.
 
