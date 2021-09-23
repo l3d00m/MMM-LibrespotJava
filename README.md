@@ -35,7 +35,7 @@ Here is an example for an entry in `config.js`
 
     config: {
         librespotApiHost: "localhost", // librespot java API host address (ip)
-        librespotApiPort: "24789", // librespot java API port, default is 24789
+        librespotApiPort: "24879", // librespot java API port, default is 24789
         updatesEvery: 1          // How often should the song be fetched from librespot API in s?
     }
 }
