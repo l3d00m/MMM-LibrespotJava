@@ -9,9 +9,11 @@ A module for the [MagicMirror](https://github.com/MichMich/MagicMirror) project 
 
 ## This fork
 
-I've modified [MMM-NowPlayingOnSpotify](https://github.com/raywo/MMM-NowPlayingOnSpotify) so I could integrate it with the [librespot-java](https://github.com/librespot-org/librespot-java) API.
+I've modified [MMM-NowPlayingOnSpotify](https://github.com/raywo/MMM-NowPlayingOnSpotify), so I could integrate it with the [librespot-java](https://github.com/librespot-org/librespot-java) API.
 
-I've also modified a few other things to my liking. I removed some options (cover art not configurable) to reduce maintainance burden for me.
+I've also modified a few other things to my liking. I removed some options (cover art not configurable) to reduce maintenance burden for me.
+
+Multiple instances of this module are now also supported, if you've got more than one Librespot speaker.
 
 ## Install the module
 
@@ -35,8 +37,9 @@ Here is an example for an entry in `config.js`
 
     config: {
         librespotApiHost: "localhost", // librespot java API host address (ip)
-        librespotApiPort: "24879", // librespot java API port, default is 24789
-        updatesEvery: 1          // How often should the song be fetched from librespot API in s?
+        librespotApiPort: "24879",     // librespot java API port, default is 24789
+        updatesEvery: 1,               // How often should the song be fetched from librespot API in s?
+        deviceName: '',                // Optional device name to display next to the progress time
     }
 }
 ```

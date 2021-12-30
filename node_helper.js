@@ -12,15 +12,15 @@ module.exports = NodeHelper.create({
     socketNotificationReceived: function (notification, payload) {
         switch (notification) {
             case 'CONNECT_TO_WEBSOCKET':
-                this.connectWs(payload)
+                this.connectWs(payload.data, payload.id)
                 break;
             case 'FETCH_SONG':
-                this.fetchSong(payload)
+                this.fetchSong(payload.data, payload.id)
                 break;
         }
     },
 
-    connectWs: function (websocketUrl) {
+    connectWs: function (websocketUrl, identifier) {
         console.log("Connecting to websocket: " + websocketUrl)
         var that = this;
         const ws = new WebSocket(websocketUrl);
@@ -35,23 +35,23 @@ module.exports = NodeHelper.create({
             //console.log(eventName);
             switch (eventName) {
                 case "playbackPaused":
-                    that.sendSocketNotification("UPDATE_STATE", "paused");
+                    that.sendSocketNotification("UPDATE_STATE", { id: identifier, data: "paused" });
                     break;
                 case "trackChanged":
                 case "playbackResumed":
-                    that.sendSocketNotification("UPDATE_STATE", "playing");
+                    that.sendSocketNotification("UPDATE_STATE", { id: identifier, data: "playing" });
                     break;
                 case "playbackStopped":
                 case "panic":
                 case "sessionCleared":
                 case "inactiveSession":
                 case "connectionDropped":
-                    that.sendSocketNotification("UPDATE_STATE", "stopped");
+                    that.sendSocketNotification("UPDATE_STATE", { id: identifier, data: "stopped" });
                     break;
                 case "trackSeeked":
                 case "metadataAvailable":
                 case "sessionChanged":
-                    that.sendSocketNotification("FETCH_NEW_SONG_DATA");
+                    that.sendSocketNotification("FETCH_NEW_SONG_DATA", { id: identifier });
                     break;
                 case "contextChanged":
                 default:
@@ -64,32 +64,21 @@ module.exports = NodeHelper.create({
             console.error("Socket is closed. Reconnect will be attempted.", e.reason);
             setTimeout(function () {
                 that.connectWs(websocketUrl);
-            }, 100);
-        };
-
-        ws.onerror = function (err) {
-            console.error(
-                "Socket encountered error: ",
-                err.message,
-                "Closing socket and reopening shortly"
-            );
-            ws.close();
-            setTimeout(function () {
-                that.connectWs(websocketUrl);
-            }, 100);
+            }, 1000);
         };
     },
-    fetchSong: function (apiUrl) {
+    fetchSong: function (apiUrl, identifier) {
         var that = this; // ugly
         request.post(
             apiUrl,
             function (error, _response, body) {
                 if (error) return console.error("error with librespot java api");
+                if (!body || body == "") return //console.error("empty librespot api body?")
                 let data = JSON.parse(body)
                 if (data["msg"] != null) {
                     console.info(data["msg"])
                 } else {
-                    that.sendSocketNotification("RETRIEVED_SONG_DATA", data);
+                    that.sendSocketNotification("RETRIEVED_SONG_DATA", { id: identifier, data: data });
                 }
 
             }

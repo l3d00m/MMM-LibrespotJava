@@ -11,9 +11,10 @@ Module.register('MMM-LibrespotJava', {
     hidden: false,
 
     // user definable
-    librespotApiHost: "localhost", // librespot java API host address (ip)
-    librespotApiPort: "24789", // librespot java API port, default is 24789
+    librespotApiHost: "127.0.0.1", // librespot java API host address (ip)
+    librespotApiPort: "24879", // librespot java API port, default is 24789
     updatesEvery: 1,          // How often should the table be updated in s?
+    deviceName: ""
   },
 
 
@@ -21,7 +22,10 @@ Module.register('MMM-LibrespotJava', {
     Log.info('Starting module: ' + this.name);
 
     this.context = null;
-    this.sendSocketNotification('CONNECT_TO_WEBSOCKET', `ws://${this.config.librespotApiHost}:${this.config.librespotApiPort}/events`);
+    this.sendSocketNotification('CONNECT_TO_WEBSOCKET', {
+      id: this.identifier,
+      data: `ws://${this.config.librespotApiHost}:${this.config.librespotApiPort}/events`
+    });
     this.startFetchingLoop();
   },
 
@@ -46,24 +50,33 @@ Module.register('MMM-LibrespotJava', {
   },
 
   socketNotificationReceived: function (notification, payload) {
+    if (this.identifier !== payload.id) return
     switch (notification) {
       case 'RETRIEVED_SONG_DATA':
-        this.updateSongDom(payload)
+        this.updateSongDom(payload.data)
         break;
       case 'UPDATE_STATE':
-        state = payload;
+        state = payload.data;
         if (state != "stopped") break;
       case "FETCH_NEW_SONG_DATA":
+        console.log("Updating song data because of changes")
         if (state == "stopped") return this.updateSongDom(null);
-        this.sendSocketNotification("FETCH_SONG", `http://${this.config.librespotApiHost}:${this.config.librespotApiPort}/player/current`);
+        this.fetchSong();
         break;
     }
+  },
+
+  fetchSong() {
+    this.sendSocketNotification("FETCH_SONG", {
+      id: this.identifier,
+      data: `http://${this.config.librespotApiHost}:${this.config.librespotApiPort}/player/current`
+    });
   },
 
   startFetchingLoop() {
     // ... and then repeat in the given interval
     setInterval(() => {
-      if (state != "stopped") this.sendSocketNotification("FETCH_SONG", `http://${this.config.librespotApiHost}:${this.config.librespotApiPort}/player/current`);
+      if (state != "stopped") this.fetchSong();
     }, this.config.updatesEvery * 1000);
   },
 
@@ -79,7 +92,8 @@ Module.register('MMM-LibrespotJava', {
         songTitle: songInfo.track.name,
         isPlaying: state === "playing",
         titleLength: songInfo.track.duration,
-        progress: (songInfo.trackTime < 0 ? 0 : songInfo.trackTime)
+        progress: (songInfo.trackTime < 0 ? 0 : songInfo.trackTime),
+        deviceName: this.config.deviceName
       };
       //console.log(payload)
       this.context = payload;

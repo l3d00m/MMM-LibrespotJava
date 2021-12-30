@@ -48,7 +48,9 @@ class NPOS_DomBuilder {
     content.appendChild(this.getInfoDiv('fa fa-music', context.songTitle));
     content.appendChild(this.getInfoDiv('fa fa-user', context.artist));
     content.appendChild(this.getInfoDiv('fa fa-record-vinyl', context.album));
-    content.appendChild(this.getInfoDiv(context.isPlaying ? 'fa fa-play' : 'fa fa-pause', this.getTimeInfo(context)));
+    let additionalInfo = this.getTimeInfo(context)
+    if (context.deviceName) additionalInfo += " (" + context.deviceName + ")"
+    content.appendChild(this.getInfoDiv(context.isPlaying ? 'fa fa-play' : 'fa fa-pause', additionalInfo));
     content.appendChild(this.getProgressBar(context));
 
     return content;
