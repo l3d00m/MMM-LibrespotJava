@@ -13,7 +13,7 @@ Module.register('MMM-LibrespotJava', {
     // user definable
     librespotApiHost: "127.0.0.1", // librespot java API host address (ip)
     librespotApiPort: "24879", // librespot java API port, default is 24789
-    updatesEvery: 1,          // How often should the table be updated in s?
+    updatesEvery: 1.5,          // How often should the table be updated in s?
     deviceName: ""
   },
 
@@ -22,10 +22,7 @@ Module.register('MMM-LibrespotJava', {
     Log.info('Starting module: ' + this.name);
 
     this.context = null;
-    this.sendSocketNotification('CONNECT_TO_WEBSOCKET', {
-      id: this.identifier,
-      data: `ws://${this.config.librespotApiHost}:${this.config.librespotApiPort}/events`
-    });
+    this.connectSocket();
     this.startFetchingLoop();
   },
 
@@ -63,7 +60,18 @@ Module.register('MMM-LibrespotJava', {
         if (state == "stopped") return this.updateSongDom(null);
         this.fetchSong();
         break;
+      case 'SOCKET_CLOSED':
+        console.error("Socket is closed. Reconnect will be attempted in 1s.", e.reason);
+        setTimeout(() => this.connectSocket(), 1000);
+        break;
     }
+  },
+
+  connectSocket() {
+    this.sendSocketNotification('CONNECT_TO_WEBSOCKET', {
+      id: this.identifier,
+      data: `ws://${this.config.librespotApiHost}:${this.config.librespotApiPort}/events`
+    });
   },
 
   fetchSong() {
@@ -84,7 +92,7 @@ Module.register('MMM-LibrespotJava', {
   updateSongDom: function (songInfo) {
     if (state == "stopped") {
       this.context = { noSong: true };
-    } else {
+    } else if (songInfo['track'] != null) {
       const payload = {
         imgURL: this.getImgURL(songInfo.track.album.coverGroup.image),
         artist: songInfo.track.artist.map((artist) => artist.name).join(", "),

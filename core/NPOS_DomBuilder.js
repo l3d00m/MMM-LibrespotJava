@@ -7,7 +7,6 @@ class NPOS_DomBuilder {
   }
 
   getDom(context) {
-    console.log(context)
     if (!context || context.noSong) {
       // don't show anything
       return document.createElement('div');
@@ -18,7 +17,7 @@ class NPOS_DomBuilder {
 
   getWrapper(content) {
     let wrapper = document.createElement('div');
-    wrapper.className = 'small';
+    wrapper.className = 'small NPOS';
     wrapper.appendChild(content);
 
     return wrapper;
@@ -31,7 +30,6 @@ class NPOS_DomBuilder {
    *   imgURL: *an url*,
    *   songTitle: *string*,
    *   artist: *string*,
-   *   album: *string*,
    *   isPlaying,
    *   progress,
    *   titleLength
@@ -47,7 +45,6 @@ class NPOS_DomBuilder {
 
     content.appendChild(this.getInfoDiv('fa fa-music', context.songTitle));
     content.appendChild(this.getInfoDiv('fa fa-user', context.artist));
-    content.appendChild(this.getInfoDiv('fa fa-record-vinyl', context.album));
     let additionalInfo = this.getTimeInfo(context)
     if (context.deviceName) additionalInfo += " (" + context.deviceName + ")"
     content.appendChild(this.getInfoDiv(context.isPlaying ? 'fa fa-play' : 'fa fa-pause', additionalInfo));

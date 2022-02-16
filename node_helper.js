@@ -25,14 +25,13 @@ module.exports = NodeHelper.create({
         var that = this;
         const ws = new WebSocket(websocketUrl);
         ws.onopen = function () {
-            console.log("connected to librespot api WS")
+            console.log("connected to librespot api WS with identifier " + identifier);
             setInterval(() => ws.send(JSON.stringify({ event: "ping" })), 10000);
         };
 
         ws.onmessage = function (msg) {
             const wsEvent = JSON.parse(msg.data);
             const eventName = wsEvent["event"];
-            //console.log(eventName);
             switch (eventName) {
                 case "playbackPaused":
                     that.sendSocketNotification("UPDATE_STATE", { id: identifier, data: "paused" });
@@ -60,11 +59,13 @@ module.exports = NodeHelper.create({
 
         };
 
-        ws.onclose = function (e) {
-            console.error("Socket is closed. Reconnect will be attempted.", e.reason);
-            setTimeout(function () {
-                that.connectWs(websocketUrl);
-            }, 1000);
+        ws.onclose = function () {
+            that.sendSocketNotification("SOCKET_CLOSED", { id: identifier });
+        };
+
+        ws.onerror = function (err) {
+            console.error('Socket encountered error: ', err.message, 'Closing socket');
+            ws.close();
         };
     },
     fetchSong: function (apiUrl, identifier) {
