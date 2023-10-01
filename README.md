@@ -1,3 +1,7 @@
+# Archived
+
+I no longer own a Magic Mirror, so I'm not maintaining this anymore. Last time I used it in 2021, it worked fine.
+
 # MMM-LibrespotJava
 
 A module for the [MagicMirror](https://github.com/MichMich/MagicMirror) project displaying the song currently playing on Spotify via the [librespot-java](https://github.com/librespot-org/librespot-java) API.
